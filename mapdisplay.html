@@ -1,0 +1,1587 @@
+
+<html lang="en">
+	<head>
+		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Aclonica"/>
+		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Francois+One"/>
+		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Bowlby+One+SC"/>
+		<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Paytone+One"/>
+		<link rel="stylesheet" type="text/css" href="styles.css"/>
+    	<style>
+    	</style>
+	  	<script src="http://openlayers.org/en/v3.4.0/build/ol.js" type="text/javascript"></script>
+	  	<script src="http://maps.stamen.com/js/tile.stamen.js?v3.2.0" type="text/javascript"></script>
+	  	<script src="jquery-2.1.3.js" type="text/javascript"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<title>Custom Tools</title>
+	</head>
+	<body>
+		<div style="background: rgba(232, 255, 255, 0.8); width: 1250px; margin: 0px auto; height: 850px">
+			<div class="header">
+				<div class="content">
+					<h1>Map Display</h1>
+                    <nav>
+                        <ul class="navBar">
+                            <li class="navList"><a class="navLink" href="#">Options</a>
+                                <ul class="navSub">
+									<form style="margin: 0px;">
+                                    <label class="options"><li class="navOptionsSubList"><input type="checkbox" id="adjBtnCheck" checked>&nbsp;&nbsp;Adjustment</li></label>
+                                    <label class="options"><li class="navOptionsSubList"><input type="checkbox" id="addBtnCheck" checked>&nbsp;&nbsp;Add Layers</li></label>
+                                    <label class="options"><li class="navOptionsSubList"><input type="checkbox" id="layNumInd" checked>&nbsp;&nbsp;Layer # Indicator</li></label>
+                                    <label class="options"><li class="navOptionsSubList"><input type="checkbox" id="removeBtnCheck" checked>&nbsp;&nbsp;Remove Layers</li></label>
+                                    <label class="options"><li class="navOptionsSubList"><input type="checkbox" id="stackBtnCheck" checked>&nbsp;&nbsp;Layer Stack</li></label>
+									</form>
+                                </ul>
+							</li>
+                            <li class="navList"><a class="navLink" href="#">Locations</a>
+                                <ul class="navSub">
+                                    <li class="navSubList navSubLink" onclick="map.getView().setCenter(ol.proj.transform([-98.26, 38.32], 'EPSG:4326', 'EPSG:3857'));map.getView().setZoom(4)">USA</li>
+                                    <li class="navSubList navSubLink" onclick="map.getView().setCenter(ol.proj.transform([-88.22574, 40.1115518], 'EPSG:4326', 'EPSG:3857'));map.getView().setZoom(12)">Chambana</li>
+                                    <li class="navSubList navSubLink" onclick="map.getView().setCenter(ol.proj.transform([-118.2500, 34.0500], 'EPSG:4326', 'EPSG:3857'));map.getView().setZoom(12)">Los Angeles</li>
+                                    <li class="navSubList navSubLink" onclick="map.getView().setCenter(ol.proj.transform([-74.0059, 40.7127], 'EPSG:4326', 'EPSG:3857'));map.getView().setZoom(12)">New York</li>
+                                    <li class="navSubList navSubLink" onclick="map.getView().setCenter(ol.proj.transform([-87.6847, 41.8369], 'EPSG:4326', 'EPSG:3857'));map.getView().setZoom(12)">Chicago</li>
+                                    <li class="navSubList navSubLink" onclick="map.getView().setCenter(ol.proj.transform([-77.0164, 38.9047], 'EPSG:4326', 'EPSG:3857'));map.getView().setZoom(12)">Washington D.C.</li>
+                                    <li class="navSubList navSubLink" onclick="map.getView().setCenter(ol.proj.transform([-95.3698, 29.7604], 'EPSG:4326', 'EPSG:3857'));map.getView().setZoom(12)">Houston</li>
+                                </ul>
+							</li>
+                            <li class="navList"><a class="navLink" href="#">Maps</a>
+                                <ul class="navSub">
+                                    <li class="navSubList navSubLink" onclick="leaveConfirm('Satellite')">Satellite</li>
+                                    <li class="navSubList navSubLink" onclick="leaveConfirm('Open Street 1')">Open Street 1</a></li>
+                                    <li class="navSubList navSubLink" onclick="leaveConfirm('Open Street 2')">Open Street 2</a></li>
+                                    <li class="navSubList navSubLink" onclick="leaveConfirm('Toner')">Toner</a></li>
+                                    <li class="navSubList navSubLink" onclick="leaveConfirm('Terrain')">Terrain</a></li>
+                                    <li class="navSubList navSubLink" onclick="leaveConfirm('Watercolor')">Watercolor</a></li>
+                                    <li class="navSubList navSubLink" onclick="leaveConfirm('Advanced Tools')">Custom Tools</a></li>
+                                </ul>
+                            </li>
+                            <li class="navList"><a class="navLink" href="#">Home</a></li>
+                        </ul>
+                    </nav>
+				</div>
+			</div>
+			<div id="map" class="map"></div>
+			<div id="layerStack">
+				<h2>Layer Stack</h2>
+				<hr color="#9EACAC"></hr>
+				<ul id="stackList"><form></form></ul>
+				<div class="stackControl">
+					<button class="stackControlBtn" id="raise"><img src="https://www.google.com/help/hc/images/sites_icon_arrow_up_small.gif" alt="Submit"></button>
+					<button class="stackControlBtn" id="lower"><img src="https://www.google.com/help/hc/images/sites_icon_arrow_down_small.gif" alt="Submit"></button>
+					<button class="stackControlBtn" id="remove"><img src="Delete.png" alt="Submit"></button>
+				</div>
+			</div>
+			<div id="adjustmentButtons" style="clear: both; display:block; width: 1200px; margin: 0px auto;">
+				<button class="adjustButtons" id="increase-hue">+</button>
+				<button class="adjustButtons" id="reset-hue">Hue (0.00)</button>
+				<button class="adjustButtons" id="decrease-hue">-</button>
+				<div class="buttonDivider"></div>
+				<button class="adjustButtons" id="increase-saturation">+</button>
+				<button class="adjustButtons" id="reset-saturation">Saturation (1.00)</button>
+				<button class="adjustButtons" id="decrease-saturation">-</button>
+				<div class="buttonDivider"></div>
+				<button class="adjustButtons" id="increase-brightness">+</button>
+				<button class="adjustButtons" id="reset-brightness">Brightness (0.00)</button>
+				<button class="adjustButtons" id="decrease-brightness">-</button>
+				<div class="buttonDivider"></div>
+				<button class="adjustButtons" id="increase-contrast">+</button>
+				<button class="adjustButtons" id="reset-contrast">Contrast (1.00)</button>
+				<button class="adjustButtons" id="decrease-contrast">-</button>
+
+				<div style="display: inline; padding-left: 107px">
+					<button class="adjustButtons" id="increase-opacity">+</button>
+					<button class="adjustButtons" id="reset-opacity">Opacity (1.00)</button>
+					<button class="adjustButtons" id="decrease-opacity">-</button>
+				</div>
+			</div>
+
+			<div id="addButtons" align="right" style="clear: both; padding-top: 0px; padding-right: 0px; width: 1200px; margin: 0px auto">
+				<p id='category'>Add Layers:&nbsp;&nbsp;
+					<button class="addLayerButton" id="addWatercolor">Watercolor<p class="layerNumIndicator" id="watercolorNumOfLayer">&nbsp;&nbsp;0</p></button>
+					<button class="addLayerButton" id="addTerrain">Terrain<p class="layerNumIndicator" id="terrainNumOfLayer">&nbsp;&nbsp;0</p></button>
+					<button class="addLayerButton" id="addToner">Toner<p class="layerNumIndicator" id="tonerNumOfLayer">&nbsp;&nbsp;0</p></button>
+					<button class="addLayerButton" id="addOsm1">Open Street 1<p class="layerNumIndicator" id="osm1NumOfLayer">&nbsp;&nbsp;0</p></button>
+					<button class="addLayerButton" id="addOsm2">Open Street 2<p class="layerNumIndicator" id="osm2NumOfLayer">&nbsp;&nbsp;0</p></button>
+					<button class="addLayerButton" id="addSatellite">Satellite<p class="layerNumIndicator" id="satelliteNumOfLayer">&nbsp;&nbsp;0</p></button>
+			</div>
+			<div id="removeButtons" align="right" style="clear: both; padding-top: 0px; padding-right: 0px; width: 1200px; margin: 0px auto">
+				<p id='category'>Remove Layers:&nbsp;&nbsp;
+					<button class="removeLayerButton" id="removeWatercolor">Watercolor</button>
+					<button class="removeLayerButton" id="removeTerrain">Terrain</button>
+					<button class="removeLayerButton" id="removeToner">Toner</button>
+					<button class="removeLayerButton" id="removeOsm1">Open Street 1</button>
+					<button class="removeLayerButton" id="removeOsm2">Open Street 2</button>
+					<button class="removeLayerButton" id="removeSatellite">Satellite</button>
+				</p>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var map = new ol.Map({
+				controls: ol.control.defaults().extend([
+					new ol.control.FullScreen()
+				]),
+                interactions: ol.interaction.defaults().extend([
+                    new ol.interaction.DragRotateAndZoom()
+                ]),
+				target: 'map',
+				renderer: 'webgl',
+				layers: [],
+				view: new ol.View({
+				center: ol.proj.transform([-88.22574, 40.1115518], 'EPSG:4326', 'EPSG:3857'),
+				zoom: 12})
+			});
+			function setButtonStyle(button, bool)
+			{
+				document.getElementById("addWatercolor").className = "addLayerButton";
+				document.getElementById("addTerrain").className = "addLayerButton";
+				document.getElementById("addToner").className = "addLayerButton";
+				document.getElementById("addOsm1").className = "addLayerButton";
+				document.getElementById("addOsm2").className = "addLayerButton";
+				document.getElementById("addSatellite").className = "addLayerButton";
+				if (bool === true)
+					document.getElementById(button).className += " active";
+			}
+    		function findIndex(layerName)
+    		{
+				var topIndex = 0;
+				for (var i = 0; i < map.getLayers().a.length; i++)
+				{
+					var currentLayer = map.getLayers().a[i];
+					var currentLayerName = currentLayer.get('name');
+					if (currentLayerName === layerName)
+					{
+						topIndex = i;
+					}
+				}
+				return topIndex;
+			}
+			function whosOnTop(){
+				var topLayerIndex = map.getLayers().a.length-1;
+				if (topLayerIndex > -1)
+				{
+					var topLayer = map.getLayers().a[topLayerIndex];
+					var topLayerName = topLayer.get('name');
+					if (topLayerName === 'Labels')
+					{
+						return 'Watercolor';
+					}
+					return topLayerName;
+				}
+
+				else
+					return false;
+			}
+			function leaveConfirm(whereTo){
+				var tf = confirm("Warning: All records will be erased.");
+				if (tf === true)
+				{
+					window.location.href = whereTo;
+				}
+			}
+		//////////For Layer Stack
+//layer.setVisible() --> hide
+//layer.setVisible(!layer.getVisible()) --> show
+            function refreshStack() {
+				$('#stackList form').empty();
+                var layers = map.getLayers();
+                var length = layers.getLength(), l;
+                for (var i = 0; i < length; i++) {
+                    l = layers.item(i);
+					var input_id = "";
+					if (l.get('name') === "Watercolor")
+					{
+						input_id = "watCheck"+ l.get('layerIndex');
+						$('#stackList form').prepend('<li id=' +l.get('name')+l.get('layerIndex')+ ' class="stackStyle" ondblclick="rename(' +l.get('wholeIndex')+ ')" data-layerid="' + l.get('wholeIndex') + '"><input type="checkbox" data-layerid="' + l.get('wholeIndex') + '" class="layerCheckbox" id="watCheck'+ l.get('layerIndex') +'">' + l.get('newName') + '</li>');
+						i++;
+						if (l.getVisible() === true)
+							document.getElementById("watCheck"+ l.get('layerIndex')).checked = true;
+						else
+							document.getElementById("watCheck"+ l.get('layerIndex')).checked = false;
+					}
+                    else if (l.get('name') === "Osm1")
+                    {
+						input_id = "osm1Check"+ l.get('layerIndex');
+						$('#stackList form').prepend('<li id=' +l.get('name')+l.get('layerIndex')+ ' class="stackStyle" ondblclick="rename(' +l.get('wholeIndex')+ ')" data-layerid="' + l.get('wholeIndex') + '"><input type="checkbox" data-layerid="' + l.get('wholeIndex') + '" class="layerCheckbox" id="osm1Check'+ l.get('layerIndex') +'">' + l.get('newName') + '</li>');
+						if (l.getVisible() === true)
+							document.getElementById("osm1Check"+ l.get('layerIndex')).checked = true;
+						else
+							document.getElementById("osm1Check"+ l.get('layerIndex')).checked = false;
+                    }
+                    else if (l.get('name') === "Osm2")
+                    {
+						input_id = "osm2Check"+ l.get('layerIndex');
+						$('#stackList form').prepend('<li id=' +l.get('name')+l.get('layerIndex')+ ' class="stackStyle" ondblclick="rename(' +l.get('wholeIndex')+ ')" data-layerid="' + l.get('wholeIndex') + '"><input type="checkbox" data-layerid="' + l.get('wholeIndex') + '" class="layerCheckbox" id="osm2Check'+ l.get('layerIndex') +'">' + l.get('newName') + '</li>');
+						if (l.getVisible() === true)
+							document.getElementById("osm2Check"+ l.get('layerIndex')).checked = true;
+						else
+							document.getElementById("osm2Check"+ l.get('layerIndex')).checked = false;
+                    }
+					else
+					{
+						input_id = l.get('name').toLowerCase().substring(0,3)+"Check"+l.get('layerIndex');
+						$('#stackList form').prepend('<li id=' +l.get('name')+l.get('layerIndex')+ ' class="stackStyle" ondblclick="rename(' +l.get('wholeIndex')+ ')" data-layerid="' + l.get('wholeIndex') + '"><input type="checkbox" data-layerid="' + l.get('wholeIndex') + '" class="layerCheckbox" id="'+ l.get('name').toLowerCase().substring(0,3)+'Check'+l.get('layerIndex') +'">' + l.get('newName') + '</li>');
+						if (l.getVisible() === true)
+							document.getElementById(l.get('name').toLowerCase().substring(0,3)+"Check"+l.get('layerIndex')).checked = true;
+						else
+							document.getElementById(l.get('name').toLowerCase().substring(0,3)+"Check"+l.get('layerIndex')).checked = false;
+					}
+                }
+				$('.layerCheckbox').click(function () {
+					var layerid = $(this).data('layerid');
+					var layerToHide = findByID(layerid);
+					var labelsToHide = "";
+					if ($(this).is(':checked')) {
+						if (layerToHide.get('name') === "Watercolor")
+						{
+							labelsToHide = findByID(layerid+1);
+							labelsToHide.setVisible(!layerToHide.getVisible());
+						}
+						layerToHide.setVisible(!layerToHide.getVisible());
+					}
+					else {
+						if (layerToHide.get('name') === "Watercolor")
+						{
+							labelsToHide = findByID(layerid+1);
+							labelsToHide.setVisible();
+						}
+						layerToHide.setVisible();
+					}
+				});
+                // Change style when select a layer
+                $('#stackList form li').on('click', function() {
+                    $('#stackList form li').removeClass('selected');
+                    $(this).addClass('selected');
+					var currentSelectedIndex = $('#stackList form li.selected').data('layerid');
+					var currentSelected = findByID(currentSelectedIndex);
+					setResetHueButtonHTML(currentSelected);
+					setResetSaturationButtonHTML(currentSelected);
+					setResetBrightnessButtonHTML(currentSelected);
+					setResetContrastButtonHTML(currentSelected);
+					setResetOpacityButtonHTML(currentSelected);
+                });
+            }
+			function rename(id) {
+			//add wholeindex to look up layer object, then rename the name property of layer
+				var thisLayer = findByID(id);
+				var n = prompt("Please enter a new name");
+				if (n !== null)
+				{
+					thisLayer.set('newName', n);
+					refreshStack();
+				}
+			}
+            function indexOf(layers, layer) {
+                var length = layers.getLength();
+                for (var i = 0; i < length; i++) {
+                    if (layer === layers.item(i)) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+            function findByID(ID) {
+                var layers = map.getLayers();
+                var length = layers.getLength();
+                for (var i = 0; i < length; i++) {
+                    if (ID === layers.item(i).get('wholeIndex')) {
+                        return layers.item(i);
+                    }
+                }
+                return null;
+            }
+            function raiseLayer(layer) {
+                var layers = map.getLayers();
+                var index = indexOf(layers, layer);
+                if (index < layers.getLength() - 1) {
+					if (layer.get('name') === "Watercolor")
+					{
+						if (index < layers.getLength() - 2)
+						{
+							if (layers.item(index +2).get('name') === "Watercolor")
+							{
+								var saveW2 = layers.item(index +2);
+								var saveL2 = layers.item(index +3);
+								var saveL1 = layers.item(index + 1);
+								layers.setAt(index +2, layer);
+								layers.setAt(index, saveW2);
+								layers.setAt(index +1, saveL2);
+								layers.setAt(index + 3, saveL1);
+							}
+							else
+							{
+								var next2 = layers.item(index + 2);
+								var label = layers.item(index + 1);
+								layers.setAt(index + 2, label);
+								layers.setAt(index + 1, layer);
+								layers.setAt(index, next2);
+							}
+						}
+					}
+					else if (layers.item(index +1).get('name') === "Watercolor")
+					{
+						var saveW = layers.item(index +1);
+						var saveL = layers.item(index +2);
+						layers.setAt(index +2, layer);
+						layers.setAt(index, saveW);
+						layers.setAt(index +1, saveL);
+					}
+					else
+					{
+			            var next = layers.item(index + 1);
+			            layers.setAt(index + 1, layer);
+			            layers.setAt(index, next);
+					}
+                    // Moves li element up
+                    var elem = $('#stackList form li[data-layerid="' + layer.get('wholeIndex') + '"]');
+                    elem.prev().before(elem);
+                }
+            }
+            function lowerLayer(layer) {
+                var layers = map.getLayers();
+                var index = indexOf(layers, layer);
+                if (index > 0) {
+					if (layer.get('name') === "Watercolor")
+					{
+						if (index > 1)
+						{
+							if (layers.item(index-2).get('name') === "Watercolor")
+							{
+								var saveW2 = layers.item(index -2);
+								var saveL2 = layers.item(index -1);
+								var saveL1 = layers.item(index +1);
+								layers.setAt(index -2, layer);
+								layers.setAt(index, saveW2);
+								layers.setAt(index -1, saveL2);
+								layers.setAt(index +1, saveL1);
+							}
+							else
+							{
+								var prev1 = layers.item(index - 1);
+								var labe = layers.item(index + 1);
+								layers.setAt(index, labe);
+								layers.setAt(index - 1, layer);
+								layers.setAt(index + 1, prev1);
+							}
+						}
+						else
+						{
+							var prev1 = layers.item(index - 1);
+							var labe = layers.item(index + 1);
+							layers.setAt(index, labe);
+							layers.setAt(index - 1, layer);
+							layers.setAt(index + 1, prev1);
+						}
+					}
+					else if (index -1 >= 0)
+					{
+						if (layers.item(index -1).get('name') === "Labels")
+						{
+							var saveW = layers.item(index -2);
+							var saveL = layers.item(index -1);
+							layers.setAt(index -2, layer);
+							layers.setAt(index -1, saveW);
+							layers.setAt(index, saveL);
+						}
+						else
+						{
+					        var prev = layers.item(index - 1);
+					        layers.setAt(index - 1, layer);
+					        layers.setAt(index, prev);
+						}
+					}
+
+                    // Moves li element down
+                    var elem = $('#stackList form li[data-layerid="' + layer.get('wholeIndex') + '"]');
+                    elem.next().after(elem);
+                }
+            }
+            ////////////////////////Hue&Saturation//////////////////////////
+			var topIndexNum;
+			var currentTopLayer;
+
+                //Hue
+			var increaseHue = document.getElementById('increase-hue');
+			var resetHue = document.getElementById('reset-hue');
+			var decreaseHue = document.getElementById('decrease-hue');
+
+			function setResetHueButtonHTML(layer) {
+				resetHue.innerHTML = 'Hue (' + layer.getHue().toFixed(2) + ')';
+			}
+
+			$(increaseHue).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForHue = $('#stackList form li.selected').data('layerid');
+						var layerForHueInc = findByID(indexForHue);
+						if (layerForHueInc.get('name') === "Labels")
+						{
+							labelsForHueInc = findByID(indexForHue-1);
+							labelsForHueInc.setHue(labelsForHueInc.getHue() + 0.25);
+						}
+						layerForHueInc.setHue(layerForHueInc.getHue() + 0.25);
+						setResetHueButtonHTML(layerForHueInc);
+					}
+					else
+					{
+						topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setHue(currentTopLayer.getHue() + 0.25);
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setHue(currentTopLayer.getHue() + 0.25);
+						setResetHueButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setHue(currentTopLayer.getHue() + 0.25);
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setHue(currentTopLayer.getHue() + 0.25);
+					setResetHueButtonHTML(currentTopLayer);
+				}
+			});
+			$(resetHue).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForHue = $('#stackList form li.selected').data('layerid');
+						var layerForHueRes = findByID(indexForHue);
+						if (layerForHueRes.get('name') === "Labels")
+						{
+							labelsForHueRes = findByID(indexForHue-1);
+							labelsForHueRes.setHue(0);
+						}
+						layerForHueRes.setHue(0);
+						setResetHueButtonHTML(layerForHueRes);
+					}
+					else
+					{
+		    			topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setHue(0);
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setHue(0);
+						setResetHueButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+	    			topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setHue(0);
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setHue(0);
+					setResetHueButtonHTML(currentTopLayer);
+				}
+			});
+			$(decreaseHue).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForHue = $('#stackList form li.selected').data('layerid');
+						var layerForHueDec = findByID(indexForHue);
+						if (layerForHueDec.get('name') === "Labels")
+						{
+							labelsForHueDec = findByID(indexForHue-1);
+							labelsForHueDec.setHue(labelsForHueDec.getHue() - 0.25);
+						}
+						layerForHueDec.setHue(layerForHueDec.getHue() - 0.25);
+						setResetHueButtonHTML(layerForHueDec);
+					}
+					else
+					{
+						topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setHue(currentTopLayer.getHue() - 0.25);
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setHue(currentTopLayer.getHue() - 0.25);
+						setResetHueButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setHue(currentTopLayer.getHue() - 0.25);
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setHue(currentTopLayer.getHue() - 0.25);
+					setResetHueButtonHTML(currentTopLayer);
+				}
+			});
+
+                //Saturation
+			var increaseSaturation = document.getElementById('increase-saturation');
+			var resetSaturation = document.getElementById('reset-saturation');
+			var decreaseSaturation = document.getElementById('decrease-saturation');
+
+			function setResetSaturationButtonHTML(layer) {
+			  resetSaturation.innerHTML = 'Saturation (' + layer.getSaturation().toFixed(2) + ')';
+			}
+
+			$(increaseSaturation).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForSatur = $('#stackList form li.selected').data('layerid');
+						var layerForSaturInc = findByID(indexForSatur);
+						if (layerForSaturInc.get('name') === "Labels")
+						{
+							labelsForSaturInc = findByID(indexForSatur-1);
+							labelsForSaturInc.setSaturation(labelsForSaturInc.getSaturation() + 0.25);
+						}
+						layerForSaturInc.setSaturation(layerForSaturInc.getSaturation() + 0.25);
+						setResetSaturationButtonHTML(layerForSaturInc);
+					}
+					else
+					{
+				        topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+								currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setSaturation(currentTopLayer.getSaturation() + 0.25);
+						}
+							currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setSaturation(currentTopLayer.getSaturation() + 0.25);
+						setResetSaturationButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+			        topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setSaturation(currentTopLayer.getSaturation() + 0.25);
+					}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setSaturation(currentTopLayer.getSaturation() + 0.25);
+					setResetSaturationButtonHTML(currentTopLayer);
+				}
+			});
+			$(resetSaturation).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForSatur = $('#stackList form li.selected').data('layerid');
+						var layerForSaturRes = findByID(indexForSatur);
+						if (layerForSaturRes.get('name') === "Labels")
+						{
+							labelsForSaturRes = findByID(indexForSatur-1);
+							labelsForSaturRes.setSaturation(1);
+						}
+						layerForSaturRes.setSaturation(1);
+						setResetSaturationButtonHTML(layerForSaturRes);
+					}
+					else
+					{
+						topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setSaturation(1);
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setSaturation(1);
+						setResetSaturationButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setSaturation(1);
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setSaturation(1);
+					setResetSaturationButtonHTML(currentTopLayer);
+				}
+			});
+			$(decreaseSaturation).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForSatur = $('#stackList form li.selected').data('layerid');
+						var layerForSaturDec = findByID(indexForSatur);
+						if (layerForSaturDec.get('name') === "Labels")
+						{
+							labelsForSaturDec = findByID(indexForSatur-1);
+							labelsForSaturDec.setSaturation(Math.max(labelsForSaturDec.getSaturation() - 0.25, 0));
+						}
+						layerForSaturDec.setSaturation(Math.max(layerForSaturDec.getSaturation() - 0.25, 0));
+						setResetSaturationButtonHTML(layerForSaturDec);
+					}
+					else
+					{
+						topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setSaturation(Math.max(currentTopLayer.getSaturation() - 0.25, 0));
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setSaturation(Math.max(currentTopLayer.getSaturation() - 0.25, 0));
+						setResetSaturationButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setSaturation(Math.max(currentTopLayer.getSaturation() - 0.25, 0));
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setSaturation(Math.max(currentTopLayer.getSaturation() - 0.25, 0));
+					setResetSaturationButtonHTML(currentTopLayer);
+				}
+			});
+
+            //////////////////Brightness&Contrast Buttons///////////////////
+
+				//Brightness
+			var increaseBrightness = document.getElementById('increase-brightness');
+			var resetBrightness = document.getElementById('reset-brightness');
+			var decreaseBrightness = document.getElementById('decrease-brightness');
+
+			function setResetBrightnessButtonHTML(layer) {
+				resetBrightness.innerHTML = 'Brightness (' + layer.getBrightness().toFixed(2) + ')';
+			}
+
+			$(increaseBrightness).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForBrightness = $('#stackList form li.selected').data('layerid');
+						var layerForBrightnessInc = findByID(indexForBrightness);
+						if (layerForBrightnessInc.get('name') === "Labels")
+						{
+							labelsForBrightnessInc = findByID(indexForBrightness-1);
+							labelsForBrightnessInc.setBrightness(Math.min(labelsForBrightnessInc.getBrightness() + 0.10, 1));
+						}
+						layerForBrightnessInc.setBrightness(Math.min(layerForBrightnessInc.getBrightness() + 0.10, 1));
+						setResetBrightnessButtonHTML(layerForBrightnessInc);
+					}
+					else
+					{
+						topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setBrightness(Math.min(currentTopLayer.getBrightness() + 0.10, 1));
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setBrightness(Math.min(currentTopLayer.getBrightness() + 0.10, 1));
+						setResetBrightnessButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setBrightness(Math.min(currentTopLayer.getBrightness() + 0.10, 1));
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setBrightness(Math.min(currentTopLayer.getBrightness() + 0.10, 1));
+					setResetBrightnessButtonHTML(currentTopLayer);
+				}
+			});
+			$(resetBrightness).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForBrightness = $('#stackList form li.selected').data('layerid');
+						var layerForBrightnessRes = findByID(indexForBrightness);
+						if (layerForBrightnessRes.get('name') === "Labels")
+						{
+							labelsForBrightnessRes = findByID(indexForBrightness-1);
+							labelsForBrightnessRes.setBrightness(0);
+						}
+						layerForBrightnessRes.setBrightness(0);
+						setResetBrightnessButtonHTML(layerForBrightnessRes);
+					}
+					else
+					{
+						topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setBrightness(0);
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setBrightness(0);
+						setResetBrightnessButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setBrightness(0);
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setBrightness(0);
+					setResetBrightnessButtonHTML(currentTopLayer);
+				}				
+			});
+			$(decreaseBrightness).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForBrightness = $('#stackList form li.selected').data('layerid');
+						var layerForBrightnessDec = findByID(indexForBrightness);
+						if (layerForBrightnessDec.get('name') === "Labels")
+						{
+							labelsForBrightnessDec = findByID(indexForBrightness-1);
+							labelsForBrightnessDec.setBrightness(Math.max(labelsForBrightnessDec.getBrightness() - 0.25, 0));
+						}
+						layerForBrightnessDec.setBrightness(Math.max(layerForBrightnessDec.getBrightness() - 0.25, 0));
+						setResetBrightnessButtonHTML(layerForBrightnessDec);
+					}
+					else
+					{
+						topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setBrightness(Math.max(currentTopLayer.getBrightness() - 0.10, -1));
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setBrightness(Math.max(currentTopLayer.getBrightness() - 0.10, -1));
+						setResetBrightnessButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setBrightness(Math.max(currentTopLayer.getBrightness() - 0.10, -1));
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setBrightness(Math.max(currentTopLayer.getBrightness() - 0.10, -1));
+					setResetBrightnessButtonHTML(currentTopLayer);
+				}
+			});
+
+                //Contrast
+			var increaseContrast = document.getElementById('increase-contrast');
+			var resetContrast = document.getElementById('reset-contrast');
+			var decreaseContrast = document.getElementById('decrease-contrast');
+
+			function setResetContrastButtonHTML(layer) {
+			    resetContrast.innerHTML = 'Contrast (' + layer.getContrast().toFixed(2) + ')';
+			}
+
+			$(increaseContrast).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForContrast = $('#stackList form li.selected').data('layerid');
+						var layerForContrastInc = findByID(indexForContrast);
+						if (layerForContrastInc.get('name') === "Labels")
+						{
+							labelsForContrastInc = findByID(indexForContrast-1);
+							labelsForContrastInc.setContrast(labelsForContrastInc.getContrast() + 0.20);
+						}
+						layerForContrastInc.setContrast(layerForContrastInc.getContrast() + 0.20);
+						setResetContrastButtonHTML(layerForContrastInc);
+					}
+					else
+					{
+				        topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setContrast(currentTopLayer.getContrast() + 0.20);
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setContrast(currentTopLayer.getContrast() + 0.20);
+						setResetContrastButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+			        topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setContrast(currentTopLayer.getContrast() + 0.20);
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setContrast(currentTopLayer.getContrast() + 0.20);
+					setResetContrastButtonHTML(currentTopLayer);
+				}
+			});
+			$(resetContrast).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForContrast = $('#stackList form li.selected').data('layerid');
+						var layerForContrastRes = findByID(indexForContrast);
+						if (layerForContrastRes.get('name') === "Labels")
+						{
+							labelsForContrastRes = findByID(indexForContrast-1);
+							labelsForContrastRes.setContrast(1);
+						}
+						layerForContrastRes.setContrast(1);
+						setResetContrastButtonHTML(layerForContrastRes);
+					}
+					else
+					{
+						topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setContrast(1);
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setContrast(1);
+						setResetContrastButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setContrast(1);
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setContrast(1);
+					setResetContrastButtonHTML(currentTopLayer);
+				}
+			});
+			$(decreaseContrast).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForContrast = $('#stackList form li.selected').data('layerid');
+						var layerForContrastDec = findByID(indexForContrast);
+						if (layerForContrastDec.get('name') === "Labels")
+						{
+							labelsForContrastDec = findByID(indexForContrast-1);
+							labelsForContrastDec.setContrast(Math.max(labelsForContrastDec.getContrast() - 0.20, 0));
+						}
+						layerForContrastDec.setContrast(Math.max(layerForContrastDec.getContrast() - 0.20, 0));
+						setResetContrastButtonHTML(layerForContrastDec);
+					}
+					else
+					{
+						topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setContrast(Math.max(currentTopLayer.getContrast() - 0.20, 0));
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setContrast(Math.max(currentTopLayer.getContrast() - 0.20, 0));
+						setResetContrastButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setContrast(Math.max(currentTopLayer.getContrast() - 0.20, 0));
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setContrast(Math.max(currentTopLayer.getContrast() - 0.20, 0));
+					setResetContrastButtonHTML(currentTopLayer);
+				}
+			});
+            ////////////////////////Opacity Button//////////////////////////
+			var increaseOpacity = document.getElementById('increase-opacity');
+			var resetOpacity = document.getElementById('reset-opacity');
+			var decreaseOpacity = document.getElementById('decrease-opacity');
+
+			function setResetOpacityButtonHTML(layer) {
+				resetOpacity.innerHTML = 'Opacity (' + layer.getOpacity().toFixed(2) + ')';
+			}
+
+			$(increaseOpacity).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForOpacity = $('#stackList form li.selected').data('layerid');
+						var layerForOpacityInc = findByID(indexForOpacity);
+						if (layerForOpacityInc.get('name') === "Labels")
+						{
+							labelsForOpacityInc = findByID(indexForOpacity-1);
+							labelsForOpacityInc.setOpacity(Math.min(labelsForOpacityInc.getOpacity() + 0.1, 1));
+						}
+						layerForOpacityInc.setOpacity(Math.min(layerForOpacityInc.getOpacity() + 0.1, 1));
+						setResetOpacityButtonHTML(layerForOpacityInc);
+					}
+					else
+					{
+						topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setOpacity(Math.min(currentTopLayer.getOpacity() + 0.1, 1));
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setOpacity(Math.min(currentTopLayer.getOpacity() + 0.1, 1));
+						setResetOpacityButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setOpacity(Math.min(currentTopLayer.getOpacity() + 0.1, 1));
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setOpacity(Math.min(currentTopLayer.getOpacity() + 0.1, 1));
+					setResetOpacityButtonHTML(currentTopLayer);
+				}
+			});
+			$(resetOpacity).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForOpacity = $('#stackList form li.selected').data('layerid');
+						var layerForOpacityRes = findByID(indexForOpacity);
+						if (layerForOpacityRes.get('name') === "Labels")
+						{
+							labelsForOpacityRes = findByID(indexForOpacity-1);
+							labelsForOpacityRes.setOpacity(1);
+						}
+						layerForOpacityRes.setOpacity(1);
+						setResetOpacityButtonHTML(layerForOpacityRes);
+					}
+					else
+					{
+						topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setOpacity(1);
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setOpacity(1);
+						setResetOpacityButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setOpacity(1);
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setOpacity(1);
+					setResetOpacityButtonHTML(currentTopLayer);
+				}
+			});
+			$(decreaseOpacity).on('click', function() {
+				if (document.getElementById('stackBtnCheck').checked)
+				{
+					if ($('#stackList form li.selected').data('layerid') !== undefined)
+					{
+						var indexForOpacity = $('#stackList form li.selected').data('layerid');
+						var layerForOpacityDec = findByID(indexForOpacity);
+						if (layerForOpacityDec.get('name') === "Labels")
+						{
+							labelsForOpacityDec = findByID(indexForOpacity-1);
+							labelsForOpacityDec.setOpacity(Math.max(labelsForOpacityDec.getOpacity() - 0.10, 0));
+						}
+						layerForOpacityDec.setOpacity(Math.max(layerForOpacityDec.getOpacity() - 0.10, 0));
+						setResetOpacityButtonHTML(layerForOpacityDec);
+					}
+					else
+					{
+						topIndexNum = map.getLayers().a.length -1;
+						if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+						{
+							currentTopLayer = map.getLayers().a[topIndexNum-1];
+							currentTopLayer.setOpacity(Math.max(currentTopLayer.getOpacity() - 0.1, 0));
+						}
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						currentTopLayer.setOpacity(Math.max(currentTopLayer.getOpacity() - 0.1, 0));
+						setResetOpacityButtonHTML(currentTopLayer);
+					}
+				}
+				else
+				{
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+						currentTopLayer.setOpacity(Math.max(currentTopLayer.getOpacity() - 0.1, 0));
+					}
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					currentTopLayer.setOpacity(Math.max(currentTopLayer.getOpacity() - 0.1, 0));
+					setResetOpacityButtonHTML(currentTopLayer);
+				}
+			});
+
+			
+            //////////////////////Add&Remove Buttons////////////////////////
+
+			var layerCounter1 = 0;
+			var layerCounter2 = 0;
+			var layerCounter3 = 0;
+			var layerCounter4 = 0;
+			var layerCounter5 = 0;
+			var layerCounter6 = 0;
+			var i = 1;
+			var watIndex = 1;
+			var terIndex = 1;
+			var tonIndex = 1;
+			var osm1Index = 1;
+			var osm2Index = 1;
+			var satIndex = 1;
+
+			$(document).ready(function() {
+				//for add buttons
+				$('#addWatercolor').on('click', function() {
+					setButtonStyle('addWatercolor', true);
+					map.addLayer(new ol.layer.Tile({name: 'Watercolor', wholeIndex: i, layerIndex: watIndex, newName: 'Watercolor ' + watIndex, source: new ol.source.Stamen({layer: 'watercolor'})}));
+					map.addLayer(new ol.layer.Tile({name: 'Labels', wholeIndex: i+=1, layerIndex: watIndex, newName: 'Labels ' + watIndex, source: new ol.source.Stamen({layer: 'terrain-labels'})}));
+					layerCounter1++;
+					document.getElementById("watercolorNumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter1;
+
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+					}
+					else
+						currentTopLayer = map.getLayers().a[topIndexNum];
+					setResetHueButtonHTML(currentTopLayer);
+					setResetSaturationButtonHTML(currentTopLayer);
+					setResetBrightnessButtonHTML(currentTopLayer);
+					setResetContrastButtonHTML(currentTopLayer);
+					setResetOpacityButtonHTML(currentTopLayer);
+					i++;
+					watIndex++;
+				});
+				$('#addTerrain').on('click', function() {
+					setButtonStyle('addTerrain', true);
+					map.addLayer(new ol.layer.Tile({name: 'Terrain', wholeIndex: i, layerIndex: terIndex, newName: 'Terrain ' + terIndex, source: new ol.source.Stamen({layer: 'terrain'})}));
+					layerCounter2++;
+					document.getElementById("terrainNumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter2;
+
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+					}
+					else
+						currentTopLayer = map.getLayers().a[topIndexNum];
+					setResetHueButtonHTML(currentTopLayer);
+					setResetSaturationButtonHTML(currentTopLayer);
+					setResetBrightnessButtonHTML(currentTopLayer);
+					setResetContrastButtonHTML(currentTopLayer);
+					setResetOpacityButtonHTML(currentTopLayer);
+					i++;
+					terIndex++;
+				});
+				$('#addToner').on('click', function() {
+					setButtonStyle('addToner', true);
+					map.addLayer(new ol.layer.Tile({name: 'Toner', wholeIndex: i, layerIndex: tonIndex, newName: 'Toner ' + tonIndex, source: new ol.source.Stamen({layer: 'toner'})}));
+					layerCounter3++;
+					document.getElementById("tonerNumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter3;
+
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+					}
+					else
+						currentTopLayer = map.getLayers().a[topIndexNum];
+					setResetHueButtonHTML(currentTopLayer);
+					setResetSaturationButtonHTML(currentTopLayer);
+					setResetBrightnessButtonHTML(currentTopLayer);
+					setResetContrastButtonHTML(currentTopLayer);
+					setResetOpacityButtonHTML(currentTopLayer);
+					i++;
+					tonIndex++;
+				});
+				$('#addOsm1').on('click', function() {
+					setButtonStyle('addOsm1', true);
+					map.addLayer(new ol.layer.Tile({name: 'Osm1', wholeIndex: i, layerIndex: osm1Index, newName: 'Open Street1 ' + osm1Index, source: new ol.source.OSM()}));
+					layerCounter4++;
+					document.getElementById("osm1NumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter4;
+
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+					}
+					else
+						currentTopLayer = map.getLayers().a[topIndexNum];
+					setResetHueButtonHTML(currentTopLayer);
+					setResetSaturationButtonHTML(currentTopLayer);
+					setResetBrightnessButtonHTML(currentTopLayer);
+					setResetContrastButtonHTML(currentTopLayer);
+					setResetOpacityButtonHTML(currentTopLayer);
+					i++;
+					osm1Index++;
+				});
+				$('#addOsm2').on('click', function() {
+					setButtonStyle('addOsm2', true);
+					map.addLayer(new ol.layer.Tile({name: 'Osm2', wholeIndex: i, layerIndex: osm2Index, newName: 'Open Street2 ' + osm2Index, source: new ol.source.MapQuest({layer: 'osm'})}));
+					layerCounter5++;
+					document.getElementById("osm2NumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter5;
+
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+					}
+					else
+						currentTopLayer = map.getLayers().a[topIndexNum];
+					setResetHueButtonHTML(currentTopLayer);
+					setResetSaturationButtonHTML(currentTopLayer);
+					setResetBrightnessButtonHTML(currentTopLayer);
+					setResetContrastButtonHTML(currentTopLayer);
+					setResetOpacityButtonHTML(currentTopLayer);
+					i++;
+					osm2Index++;
+				});
+				$('#addSatellite').on('click', function() {
+					setButtonStyle('addSatellite', true);
+					map.addLayer(new ol.layer.Tile({name: 'Satellite', wholeIndex: i, layerIndex: satIndex, newName: 'Satellite ' + satIndex, source: new ol.source.MapQuest({layer: 'sat'})}));
+					layerCounter6++;
+					document.getElementById("satelliteNumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter6;
+
+					topIndexNum = map.getLayers().a.length -1;
+					if (map.getLayers().a[topIndexNum].get('name') === "Labels")
+					{
+						currentTopLayer = map.getLayers().a[topIndexNum-1];
+					}
+					else
+						currentTopLayer = map.getLayers().a[topIndexNum];
+					setResetHueButtonHTML(currentTopLayer);
+					setResetSaturationButtonHTML(currentTopLayer);
+					setResetBrightnessButtonHTML(currentTopLayer);
+					setResetContrastButtonHTML(currentTopLayer);
+					setResetOpacityButtonHTML(currentTopLayer);
+					i++;
+					satIndex++;
+				});
+
+				//for remove buttons
+				$('#removeWatercolor').on('click', function() {
+					if (layerCounter1 !== 0)
+					{
+		                var topIndex = findIndex('Labels');
+		                map.getLayers().removeAt(topIndex);
+		                map.getLayers().removeAt(topIndex-1);
+						var topLayerName = whosOnTop();
+						if (topLayerName !== false)
+							setButtonStyle('add' + topLayerName, true);
+						else
+							setButtonStyle('add' + topLayerName, false);
+
+						if (layerCounter1 > 0)
+							layerCounter1-=1;
+						else
+							layerCounter1 = 0;
+
+						document.getElementById("watercolorNumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter1;
+						if (layerCounter1 === 0 && map.getLayers().a.length === 0)
+						{
+							resetHue.innerHTML = 'Hue (0.00)';
+							resetSaturation.innerHTML = 'Saturation (1.00)';
+							resetBrightness.innerHTML = 'Brightness (0.00)';
+							resetContrast.innerHTML = 'Contrast (1.00)';
+							resetOpacity.innerHTML = 'Opacity (1.00)';
+						}
+						else
+						{
+							topIndexNum = map.getLayers().a.length -1;
+							currentTopLayer = map.getLayers().a[topIndexNum];
+							setResetHueButtonHTML(currentTopLayer);
+							setResetSaturationButtonHTML(currentTopLayer);
+							setResetBrightnessButtonHTML(currentTopLayer);
+							setResetContrastButtonHTML(currentTopLayer);
+							setResetOpacityButtonHTML(currentTopLayer);
+						}
+					}
+				});
+				$('#removeTerrain').on('click', function() {
+					if (layerCounter2 !== 0)
+					{
+						var topIndex = findIndex('Terrain');
+		                map.getLayers().removeAt(topIndex);
+						var topLayerName = whosOnTop();
+						if (topLayerName !== false)
+							setButtonStyle('add' + topLayerName, true);
+						else
+							setButtonStyle('add' + topLayerName, false);
+
+						if (layerCounter2 > 0)
+							layerCounter2-=1;
+						else
+							layerCounter2 = 0;
+
+						document.getElementById("terrainNumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter2;
+						if (layerCounter2 === 0 && map.getLayers().a.length === 0)
+						{
+							resetHue.innerHTML = 'Hue (0.00)';
+							resetSaturation.innerHTML = 'Saturation (1.00)';
+							resetBrightness.innerHTML = 'Brightness (0.00)';
+							resetContrast.innerHTML = 'Contrast (1.00)';
+							resetOpacity.innerHTML = 'Opacity (1.00)';
+						}
+						else
+						{
+							topIndexNum = map.getLayers().a.length -1;
+							currentTopLayer = map.getLayers().a[topIndexNum];
+							setResetHueButtonHTML(currentTopLayer);
+							setResetSaturationButtonHTML(currentTopLayer);
+							setResetBrightnessButtonHTML(currentTopLayer);
+							setResetContrastButtonHTML(currentTopLayer);
+							setResetOpacityButtonHTML(currentTopLayer);
+						}
+					}
+				});
+				$('#removeToner').on('click', function() {
+					if (layerCounter3 !== 0)
+					{
+		                var topIndex = findIndex('Toner');
+		                map.getLayers().removeAt(topIndex);
+						var topLayerName = whosOnTop();
+						if (topLayerName !== false)
+							setButtonStyle('add' + topLayerName, true);
+						else
+							setButtonStyle('add' + topLayerName, false);
+
+						if (layerCounter3 > 0)
+							layerCounter3-=1;
+						else
+							layerCounter3 = 0;
+
+						document.getElementById("tonerNumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter3;
+						if (layerCounter3 === 0 && map.getLayers().a.length === 0)
+						{
+							resetHue.innerHTML = 'Hue (0.00)';
+							resetSaturation.innerHTML = 'Saturation (1.00)';
+							resetBrightness.innerHTML = 'Brightness (0.00)';
+							resetContrast.innerHTML = 'Contrast (1.00)';
+							resetOpacity.innerHTML = 'Opacity (1.00)';
+						}
+						else
+						{
+							topIndexNum = map.getLayers().a.length -1;
+							currentTopLayer = map.getLayers().a[topIndexNum];
+							setResetHueButtonHTML(currentTopLayer);
+							setResetSaturationButtonHTML(currentTopLayer);
+							setResetBrightnessButtonHTML(currentTopLayer);
+							setResetContrastButtonHTML(currentTopLayer);
+							setResetOpacityButtonHTML(currentTopLayer);
+						}
+					}
+				});
+				$('#removeOsm1').on('click', function() {
+					if (layerCounter4 !== 0)
+					{
+		                var topIndex = findIndex('Osm1');
+		                map.getLayers().removeAt(topIndex);
+						var topLayerName = whosOnTop();
+						if (topLayerName !== false)
+							setButtonStyle('add' + topLayerName, true);
+						else
+							setButtonStyle('add' + topLayerName, false);
+
+						if (layerCounter4 > 0)
+							layerCounter4-=1;
+						else
+							layerCounter4 = 0;
+
+						document.getElementById("osm1NumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter4;
+						if (layerCounter4 === 0 && map.getLayers().a.length === 0)
+						{
+							resetHue.innerHTML = 'Hue (0.00)';
+							resetSaturation.innerHTML = 'Saturation (1.00)';
+							resetBrightness.innerHTML = 'Brightness (0.00)';
+							resetContrast.innerHTML = 'Contrast (1.00)';
+							resetOpacity.innerHTML = 'Opacity (1.00)';
+						}
+						else
+						{
+							topIndexNum = map.getLayers().a.length -1;
+							currentTopLayer = map.getLayers().a[topIndexNum];
+							setResetHueButtonHTML(currentTopLayer);
+							setResetSaturationButtonHTML(currentTopLayer);
+							setResetBrightnessButtonHTML(currentTopLayer);
+							setResetContrastButtonHTML(currentTopLayer);
+							setResetOpacityButtonHTML(currentTopLayer);
+						}
+					}
+				});
+				$('#removeOsm2').on('click', function() {
+					if (layerCounter5 !== 0)
+					{
+		                var topIndex = findIndex('Osm2');
+		                map.getLayers().removeAt(topIndex);
+						var topLayerName = whosOnTop();
+						if (topLayerName !== false)
+							setButtonStyle('add' + topLayerName, true);
+						else
+							setButtonStyle('add' + topLayerName, false);
+
+						if (layerCounter5 > 0)
+							layerCounter5-=1;
+						else
+							layerCounter5 = 0;
+
+						document.getElementById("osm2NumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter5;
+						if (layerCounter5 === 0 && map.getLayers().a.length === 0)
+						{
+							resetHue.innerHTML = 'Hue (0.00)';
+							resetSaturation.innerHTML = 'Saturation (1.00)';
+							resetBrightness.innerHTML = 'Brightness (0.00)';
+							resetContrast.innerHTML = 'Contrast (1.00)';
+							resetOpacity.innerHTML = 'Opacity (1.00)';
+						}
+						else
+						{
+							topIndexNum = map.getLayers().a.length -1;
+							currentTopLayer = map.getLayers().a[topIndexNum];
+							setResetHueButtonHTML(currentTopLayer);
+							setResetSaturationButtonHTML(currentTopLayer);
+							setResetBrightnessButtonHTML(currentTopLayer);
+							setResetContrastButtonHTML(currentTopLayer);
+							setResetOpacityButtonHTML(currentTopLayer);
+						}
+					}
+				});
+				$('#removeSatellite').on('click', function() {
+					if (layerCounter6 !== 0)
+					{
+		                var topIndex = findIndex('Satellite');
+		                map.getLayers().removeAt(topIndex);
+						var topLayerName = whosOnTop();
+						if (topLayerName !== false)
+							setButtonStyle('add' + topLayerName, true);
+						else
+							setButtonStyle('add' + topLayerName, false);
+
+						if (layerCounter6 > 0)
+							layerCounter6-=1;
+						else
+							layerCounter6 = 0;
+						
+						document.getElementById("satelliteNumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter6;
+						if (layerCounter6 === 0 && map.getLayers().a.length === 0)
+						{
+							resetHue.innerHTML = 'Hue (0.00)';
+							resetSaturation.innerHTML = 'Saturation (1.00)';
+							resetBrightness.innerHTML = 'Brightness (0.00)';
+							resetContrast.innerHTML = 'Contrast (1.00)';
+							resetOpacity.innerHTML = 'Opacity (1.00)';
+						}
+						else
+						{
+							topIndexNum = map.getLayers().a.length -1;
+							currentTopLayer = map.getLayers().a[topIndexNum];
+							setResetHueButtonHTML(currentTopLayer);
+							setResetSaturationButtonHTML(currentTopLayer);
+							setResetBrightnessButtonHTML(currentTopLayer);
+							setResetContrastButtonHTML(currentTopLayer);
+							setResetOpacityButtonHTML(currentTopLayer);
+						}
+					}
+				});
+				$('.addLayerButton').on('click', function() {
+					refreshStack();
+				});
+				$('.removeLayerButton').on('click', function() {
+					refreshStack();
+				});
+            //////////////////////Show or Hide Buttons////////////////////////
+				$('#adjBtnCheck').click(function () {
+					$("#adjustmentButtons").toggle(this.checked);
+				});
+				$('#removeBtnCheck').click(function () {
+					$("#removeButtons").toggle(this.checked);
+				});
+				$('#addBtnCheck').click(function () {
+					$("#addButtons").toggle(this.checked);
+				});
+				$('#layNumInd').click(function turnOffNumIndicator() {
+					$("#watercolorNumOfLayer").toggle(this.checked);
+					$("#terrainNumOfLayer").toggle(this.checked);
+					$("#tonerNumOfLayer").toggle(this.checked);
+					$("#osm1NumOfLayer").toggle(this.checked);
+					$("#osm2NumOfLayer").toggle(this.checked);
+					$("#satelliteNumOfLayer").toggle(this.checked);
+				});
+				$('#stackBtnCheck').click(function () {
+					if ($('#stackBtnCheck').is(':checked')) {
+						document.getElementById("map").className = "map";
+					}
+					else {
+						document.getElementById("map").className = "map mapAdjusted";
+					}
+					$("#layerStack").toggle(this.checked);
+				});
+                $('#raise').on('click', function() {
+                    var layerid = $('#stackList form li.selected').data('layerid');
+                    if (layerid) {
+                        var layer = findByID(layerid);
+                        raiseLayer(layer);
+						refreshStack();	
+                    }
+					topIndexNum = map.getLayers().a.length -1;
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					setResetHueButtonHTML(currentTopLayer);
+					setResetSaturationButtonHTML(currentTopLayer);
+					setResetBrightnessButtonHTML(currentTopLayer);
+					setResetContrastButtonHTML(currentTopLayer);
+					setResetOpacityButtonHTML(currentTopLayer);
+					var topLayerN = whosOnTop();
+					if (map.getLayers().a.length > 0)
+	                	setButtonStyle('add'+topLayerN, true);
+					else
+	                	setButtonStyle('add'+topLayerN, false);
+
+                });
+                $('#lower').on('click', function() {
+                    var layerid = $('#stackList form li.selected').data('layerid');
+                    if (layerid) {
+                        var layer = findByID(layerid);
+                        lowerLayer(layer);
+						refreshStack();	
+                    }
+					topIndexNum = map.getLayers().a.length -1;
+					currentTopLayer = map.getLayers().a[topIndexNum];
+					setResetHueButtonHTML(currentTopLayer);
+					setResetSaturationButtonHTML(currentTopLayer);
+					setResetBrightnessButtonHTML(currentTopLayer);
+					setResetContrastButtonHTML(currentTopLayer);
+					setResetOpacityButtonHTML(currentTopLayer);
+					var topLayerN = whosOnTop();
+					if (map.getLayers().a.length > 0)
+	                	setButtonStyle('add'+topLayerN, true);
+					else
+	                	setButtonStyle('add'+topLayerN, false);
+                });
+                $('#remove').on('click', function() {
+					if (map.getLayers().a.length > 0)
+					{
+		                var layerid = $('#stackList form li.selected').data('layerid');
+		                var layer = findByID(layerid);
+		                var nameOfLayer = layer.get('name');
+		                if (layerid) {
+							if (nameOfLayer === "Watercolor")
+							{
+								var labelsLayer = findByID(layerid+1);
+								map.removeLayer(labelsLayer);
+								map.removeLayer(layer);
+							}
+							else
+								map.removeLayer(layer);
+		                    if (nameOfLayer === 'Watercolor')
+		                    {
+			                    layerCounter1--;
+			                    document.getElementById("watercolorNumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter1;
+		                    }
+		                    else if (nameOfLayer === 'Terrain')
+		                    {
+			                    layerCounter2--;
+			                    document.getElementById("terrainNumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter2;
+		                    }
+		                    else if (nameOfLayer === 'Toner')
+		                    {
+			                    layerCounter3--;
+			                    document.getElementById("tonerNumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter3;
+		                    }
+		                    else if (nameOfLayer === 'Osm1')
+		                    {
+			                    layerCounter4--;
+			                    document.getElementById("osm1NumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter4;
+		                    }
+		                    else if (nameOfLayer === 'Osm2')
+		                    {
+			                    layerCounter5--;
+			                    document.getElementById("osm2NumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter5;
+		                    }
+		                    else if (nameOfLayer === 'Satellite')
+		                    {
+			                    layerCounter6--;
+			                    document.getElementById("satelliteNumOfLayer").innerHTML = "&nbsp;&nbsp;" + layerCounter6;
+		                    }
+		                }
+						refreshStack();
+						var topLayerN = whosOnTop();
+						if (map.getLayers().a.length > 0)
+		                	setButtonStyle('add'+topLayerN, true);
+						else
+		                	setButtonStyle('add'+topLayerN, false);
+					}
+					if (map.getLayers().a.length === 0)
+					{
+						resetHue.innerHTML = 'Hue (0.00)';
+						resetSaturation.innerHTML = 'Saturation (1.00)';
+						resetBrightness.innerHTML = 'Brightness (0.00)';
+						resetContrast.innerHTML = 'Contrast (1.00)';
+						resetOpacity.innerHTML = 'Opacity (1.00)';
+					}
+					else
+					{
+						topIndexNum = map.getLayers().a.length -1;
+						currentTopLayer = map.getLayers().a[topIndexNum];
+						setResetHueButtonHTML(currentTopLayer);
+						setResetSaturationButtonHTML(currentTopLayer);
+						setResetBrightnessButtonHTML(currentTopLayer);
+						setResetContrastButtonHTML(currentTopLayer);
+						setResetOpacityButtonHTML(currentTopLayer);
+					}
+                });
+			});
+		</script>
+	</body>
+</html>
